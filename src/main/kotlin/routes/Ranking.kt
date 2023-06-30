@@ -83,7 +83,7 @@ suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingMod
 
     // draw the exp text centered within the progress bar bounds
     val formatLocale = Locale.forLanguageTag(locale) ?: Locale.ENGLISH
-    val progressBarText = "${",d".format(formatLocale, experience)} / ${",d".format(formatLocale, goal)} xp"
+    val progressBarText = "${"%,d".format(formatLocale, experience)} / ${"%,d".format(formatLocale, goal)} xp"
     val barTextX = progressBarBounds.x + (progressBarBounds.width - metrics.stringWidth(progressBarText)) / 2
     graphics.drawString(/* str = */ progressBarText, /* x = */ barTextX, /* y = */ 336)
 
