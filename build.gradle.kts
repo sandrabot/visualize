@@ -16,9 +16,9 @@
 
 plugins {
     application
-    kotlin("jvm") version "1.8.21"
-    kotlin("plugin.serialization") version "1.8.21"
-    id("com.github.gmazzo.buildconfig") version "4.0.4"
+    kotlin("jvm") version "1.8.22"
+    kotlin("plugin.serialization") version "1.8.22"
+    id("com.github.gmazzo.buildconfig") version "4.1.1"
     id("io.ktor.plugin") version "2.3.1"
 }
 
@@ -32,14 +32,11 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("ch.qos.logback:logback-classic:1.3.8")
-    implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-client-java")
-    implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-call-logging")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-
     testImplementation(kotlin("test"))
 }
 
