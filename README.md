@@ -5,7 +5,7 @@ a microservice that generates images for sandra from user-provided content
 this project relies heavily upon ktor to provide a basic application framework
 
 ## license
-Copyright 2023 **Avery Carroll** / **averen**
+Copyright 2023 **Avery Carroll** / **averen** and contributors
 
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
