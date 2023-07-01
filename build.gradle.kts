@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import java.io.ByteArrayOutputStream
+
 plugins {
     application
     kotlin("jvm") version "1.8.22"
@@ -56,5 +58,17 @@ application {
 buildConfig {
     packageName("")
     className("BuildInfo")
+    val commit = executeCommand("git", "rev-parse", "HEAD")
+    buildConfigField("String", "COMMIT", "\"$commit\"")
     buildConfigField("String", "VERSION", "\"$version\"")
+    buildConfigField("String", "DETAILED_VERSION", "\"${version}_${commit.take(8)}\"")
+}
+
+fun executeCommand(vararg parts: String): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine = parts.asList()
+        standardOutput = stdout
+    }
+    return stdout.toString("utf-8").trim()
 }
