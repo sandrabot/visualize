@@ -16,7 +16,7 @@
 
 package constants
 
-import useResourceStream
+import utils.useResourceStream
 import java.awt.Font
 
 object Fonts {

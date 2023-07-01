@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll
+ * Copyright 2023 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import io.ktor.client.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.*
-import java.io.InputStream
+package exceptions
 
-val HTTP_CLIENT = HttpClient(Java) {
-    install(UserAgent) {
-        agent = "Sandra/Visualize/${BuildInfo.VERSION} (+https://sandrabot.com)"
-    }
-}
+import io.ktor.http.*
 
-fun <T> useResourceStream(path: String, block: InputStream.() -> T): T =
-    object {}.javaClass.classLoader.getResourceAsStream(path)?.use(block)
-        ?: throw IllegalArgumentException("Unable to load resource: $path")
+class BadGatewayResponse(message: String) : CallResponseException(HttpStatusCode.BadGateway, message)

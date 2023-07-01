@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll
+ * Copyright 2023 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import io.ktor.server.application.*
-import plugins.configureLogging
-import plugins.configureRouting
-import plugins.configureSerialization
-import plugins.configureStatusPages
+package exceptions
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+import io.ktor.http.*
 
-@Suppress("unused")
-fun Application.module() {
-    configureLogging()
-    configureStatusPages()
-    configureSerialization()
-    configureRouting()
-}
+abstract class CallResponseException(val status: HttpStatusCode, message: String) : RuntimeException(message)

@@ -16,9 +16,9 @@
 
 package routes
 
-import HTTP_CLIENT
 import constants.Colors
 import constants.Fonts
+import exceptions.BadGatewayResponse
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.server.application.*
@@ -26,7 +26,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import models.Ranking
-import useResourceStream
+import utils.HTTP_CLIENT
+import utils.useResourceStream
 import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -69,8 +70,9 @@ suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingMod
     graphics.fillRect(progressBarBounds.x, progressBarBounds.y, barWidth, progressBarBounds.height)
 
     // download the user's avatar and draw it next
-    val avatarStream = HTTP_CLIENT.get(avatarUrl).body<InputStream>().let { ImageIO.read(it) }
-    graphics.drawImage(avatarStream, avatarBounds.x, avatarBounds.y, avatarBounds.width, avatarBounds.height, null)
+    val avatar = HTTP_CLIENT.get("$avatarUrl?size=2048").body<InputStream>().let { ImageIO.read(it) }
+        ?: throw BadGatewayResponse("Failed to load avatar from url")
+    graphics.drawImage(avatar, avatarBounds.x, avatarBounds.y, avatarBounds.width, avatarBounds.height, null)
 
     // draw the ranking template next to smooth out corners
     val templateStream = useResourceStream("images/ranking_template.png") { ImageIO.read(this) }

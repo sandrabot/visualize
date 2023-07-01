@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import io.ktor.server.application.*
-import plugins.configureLogging
-import plugins.configureRouting
-import plugins.configureSerialization
-import plugins.configureStatusPages
+package utils
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+import BuildInfo
+import io.ktor.client.*
+import io.ktor.client.engine.java.*
+import io.ktor.client.plugins.*
+import java.io.InputStream
 
-@Suppress("unused")
-fun Application.module() {
-    configureLogging()
-    configureStatusPages()
-    configureSerialization()
-    configureRouting()
+val HTTP_CLIENT = HttpClient(Java) {
+    install(UserAgent) {
+        agent = "Sandra/Visualize/${BuildInfo.VERSION} (+https://sandrabot.com)"
+    }
 }
+
+fun <T> useResourceStream(path: String, block: InputStream.() -> T): T =
+    object {}.javaClass.classLoader.getResourceAsStream(path)?.use(block)
+        ?: throw IllegalArgumentException("Unable to load resource: $path")
