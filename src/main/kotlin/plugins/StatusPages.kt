@@ -24,7 +24,7 @@ import utils.respondJson
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
-        val failures = HttpStatusCode.allStatusCodes.filter { it.value in 400..599 }.toTypedArray()
+        val failures = HttpStatusCode.allStatusCodes.filter { it.value in 400 until 600 }.toTypedArray()
         status(*failures) { call, status ->
             call.respondJson(status, success = false, "message" to status.description)
         }

@@ -16,15 +16,44 @@
 
 package plugins
 
+import BuildInfo
 import io.ktor.server.application.*
-import io.ktor.server.plugins.callloging.*
+import io.ktor.server.application.hooks.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.util.*
+import io.ktor.util.date.*
+import io.ktor.util.pipeline.*
+
+internal val CALL_START_TIME = AttributeKey<Long>("CallStartTime")
 
 fun Application.configureLogging() {
-    install(CallLogging) {
-        format { call ->
-            "${call.response.status()} | ${call.processingTimeMillis()}ms | " +
-                    "${call.request.local.remoteAddress} | ${call.request.httpMethod.value} ${call.request.path()}"
+    log.info("Configuring Visualize ${BuildInfo.DETAILED_VERSION}")
+    install(CallLoggingOnce)
+}
+
+fun ApplicationCall.processingTime() = getTimeMillis() - attributes[CALL_START_TIME]
+
+val CallLoggingOnce = createApplicationPlugin("CallLoggingOnce") {
+    on(CallSetup) { call ->
+        call.attributes.put(CALL_START_TIME, getTimeMillis())
+    }
+
+    on(BeforeEngine) {
+        if (isHandled) application.log.info(
+            "${response.status()} | ${processingTime()}ms | ${request.httpMethod.value} ${request.uri}"
+        )
+    }
+}
+
+internal object BeforeEngine : Hook<ApplicationCall.() -> Unit> {
+    override fun install(pipeline: ApplicationCallPipeline, handler: ApplicationCall.() -> Unit) {
+        val phase = PipelinePhase("BeforeEngine")
+        pipeline.sendPipeline.insertPhaseBefore(ApplicationSendPipeline.Engine, phase)
+        pipeline.sendPipeline.intercept(phase) {
+            // some calls may only have a status after they are sent
+            if (call.response.status() == null) proceed()
+            handler(call)
         }
     }
 }
