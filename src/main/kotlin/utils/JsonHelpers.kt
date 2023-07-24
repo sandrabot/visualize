@@ -24,7 +24,7 @@ import kotlinx.serialization.json.*
 suspend fun ApplicationCall.respondJson(
     status: HttpStatusCode = HttpStatusCode.OK, success: Boolean = true, vararg data: Pair<String, Any?>
 ) {
-    val dataMap = mapOf(*data, "status" to status.value, "success" to success, "version" to BuildInfo.DETAILED_VERSION)
+    val dataMap = mapOf("status" to status.value, "success" to success, "version" to BuildInfo.DETAILED_VERSION, *data)
     respond(status = status, dataMap.toJsonObject())
 }
 

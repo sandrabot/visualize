@@ -11,8 +11,10 @@ COPY . /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --no-daemon
 
-FROM corretto
+FROM corretto AS app
 EXPOSE 41523
 WORKDIR /opt/visualize
 COPY --from=build /home/gradle/project/build/install/* .
 ENTRYPOINT ["./bin/visualize"]
+HEALTHCHECK --interval=5m --timeout=3s \
+    CMD curl -sf http://localhost:41523/status || exit 1

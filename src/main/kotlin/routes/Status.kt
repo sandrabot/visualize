@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll
+ * Copyright 2023 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package plugins
+package routes
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import routes.rankingRouting
-import routes.statusRouting
+import io.ktor.util.date.*
+import utils.respondJson
 
-fun Application.configureRouting() {
-    routing {
-        rankingRouting()
-        statusRouting()
+private val START_TIME = getTimeMillis()
+
+fun Route.statusRouting() {
+    route("/status") {
+        get {
+            val uptime = (getTimeMillis() - START_TIME) / 1000
+            call.respondJson(data = arrayOf("uptime" to uptime))
+        }
     }
 }
