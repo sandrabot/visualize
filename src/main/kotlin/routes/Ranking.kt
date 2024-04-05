@@ -21,6 +21,7 @@ import constants.Fonts
 import exceptions.BadGatewayResponse
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -70,13 +71,15 @@ suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingMod
     graphics.fillRect(progressBarBounds.x, progressBarBounds.y, barWidth, progressBarBounds.height)
 
     // download the user's avatar and draw it next
-    val avatar = HTTP_CLIENT.get("$avatarUrl?size=2048").body<InputStream>().let { ImageIO.read(it) }
+    val response = HTTP_CLIENT.get("$avatarUrl?size=2048")
+    if (response.status != HttpStatusCode.OK) throw BadGatewayResponse("Failed to download avatar from url")
+    val avatar = response.body<InputStream>().let { ImageIO.read(it) }
         ?: throw BadGatewayResponse("Failed to load avatar from url")
     graphics.drawImage(avatar, avatarBounds.x, avatarBounds.y, avatarBounds.width, avatarBounds.height, null)
 
     // draw the ranking template next to smooth out corners
-    val templateStream = useResourceStream("images/ranking_template.png") { ImageIO.read(this) }
-    graphics.drawImage(templateStream, 0, 0, image.width, image.height, null)
+    val templateImage = useResourceStream("images/ranking_template.png") { ImageIO.read(this) }
+    graphics.drawImage(templateImage, 0, 0, image.width, image.height, null)
 
     graphics.color = Colors.WHITE
     // calculate the necessary fonts and locations for the text

@@ -16,14 +16,17 @@
 
 package models
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 data class Ranking(
     val experience: Long,
     val level: Int,
     val goal: Long,
     val username: String,
-    val avatarUrl: String,
+    @JsonNames("avatar_url") val avatarUrl: String,
     val locale: String
 )

@@ -18,10 +18,10 @@ import java.io.ByteArrayOutputStream
 
 plugins {
     application
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
-    id("com.github.gmazzo.buildconfig") version "4.1.1"
-    id("io.ktor.plugin") version "2.3.2"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
+    id("com.github.gmazzo.buildconfig") version "5.3.5"
+    id("io.ktor.plugin") version "2.3.9"
 }
 
 group = "com.sandrabot"
@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("reflect"))
-    implementation("ch.qos.logback:logback-classic:1.4.8")
+    implementation("ch.qos.logback:logback-classic:1.5.3")
     implementation("io.ktor:ktor-client-java")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-content-negotiation")
@@ -47,7 +47,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(21)
 }
 
 application {
