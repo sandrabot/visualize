@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll
+ * Copyright 2024 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import routes.statusRouting
 
 fun Application.configureRouting() {
     routing {
-        rankingRouting()
-        statusRouting()
+        route("/api/v1") {
+            rankingRouting()
+            statusRouting()
+        }
     }
 }
