@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll and contributors
+ * Copyright 2024 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,11 @@ fun Application.configureStatusPages() {
         }
         exception<CallResponseException> { call, cause ->
             call.respondJson(cause.status, success = false, "message" to cause.message)
+        }
+        exception<Throwable> { call, cause ->
+            val status = HttpStatusCode.InternalServerError
+            this@configureStatusPages.log.error("Uncaught exception thrown while processing a request", cause)
+            call.respondJson(status, success = false, "message" to status.description)
         }
     }
 }
