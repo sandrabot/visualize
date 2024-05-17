@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll
+ * Copyright 2024 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,42 +18,23 @@ package plugins
 
 import BuildInfo
 import io.ktor.server.application.*
-import io.ktor.server.application.hooks.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.util.*
-import io.ktor.util.date.*
-import io.ktor.util.pipeline.*
-
-internal val CALL_START_TIME = AttributeKey<Long>("CallStartTime")
+import org.slf4j.event.Level
+import kotlin.time.Duration.Companion.milliseconds
 
 fun Application.configureLogging() {
     log.info("Configuring Visualize ${BuildInfo.DETAILED_VERSION}")
-    install(CallLoggingOnce)
-}
+    install(CallLogging) {
+        level = Level.INFO
+        format { call ->
+            val method = call.request.httpMethod.value
+            val uri = call.request.uri
+            val status = call.response.status()
+            val processingTime = call.processingTimeMillis().milliseconds
+            val userAgent = call.request.userAgent()
 
-fun ApplicationCall.processingTime() = getTimeMillis() - attributes[CALL_START_TIME]
-
-val CallLoggingOnce = createApplicationPlugin("CallLoggingOnce") {
-    on(CallSetup) { call ->
-        call.attributes.put(CALL_START_TIME, getTimeMillis())
-    }
-
-    on(BeforeEngine) {
-        if (isHandled) application.log.info(
-            "${response.status()} | ${processingTime()}ms | ${request.httpMethod.value} ${request.uri}"
-        )
-    }
-}
-
-internal object BeforeEngine : Hook<ApplicationCall.() -> Unit> {
-    override fun install(pipeline: ApplicationCallPipeline, handler: ApplicationCall.() -> Unit) {
-        val phase = PipelinePhase("BeforeEngine")
-        pipeline.sendPipeline.insertPhaseBefore(ApplicationSendPipeline.Engine, phase)
-        pipeline.sendPipeline.intercept(phase) {
-            // some calls may only have a status after they are sent
-            if (call.response.status() == null) proceed()
-            handler(call)
+            "$method $uri | $status | $processingTime | $userAgent"
         }
     }
 }
