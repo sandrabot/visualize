@@ -18,14 +18,23 @@ package plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import routes.rankingRouting
-import routes.statusRouting
+import routes.drawRankingRoute
+import routes.statusRoute
 
 fun Application.configureRouting() {
     routing {
         route("/api/v1") {
-            rankingRouting()
-            statusRouting()
+
+            // http://localhost:41523/api/v1/status
+            statusRoute()
+
+            route("/draw") {
+
+                // http://localhost:41523/api/v1/draw/ranking
+                drawRankingRoute()
+
+            }
+
         }
     }
 }

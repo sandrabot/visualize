@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Avery Carroll and contributors
+ * Copyright 2024 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import utils.respondJson
 
 private val START_TIME = getTimeMillis()
 
-fun Route.statusRouting() {
+fun Route.statusRoute() {
     route("/status") {
         get {
             val uptime = (getTimeMillis() - START_TIME) / 1000
