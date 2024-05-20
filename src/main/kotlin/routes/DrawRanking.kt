@@ -26,7 +26,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import models.Ranking
+import models.RankingContext
 import utils.HTTP_CLIENT
 import utils.useResourceStream
 import java.awt.Rectangle
@@ -34,7 +34,6 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -42,13 +41,13 @@ import kotlin.math.roundToInt
 fun Route.rankingRouting() {
     route("/ranking") {
         post {
-            val rankingModel = call.receive<Ranking>()
-            call.respondBytes { drawRankingImage(rankingModel) }
+            val rankingContext = call.receive<RankingContext>()
+            call.respondBytes { drawRankingImage(rankingContext) }
         }
     }
 }
 
-suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingModel) {
+suspend fun drawRankingImage(rankingContext: RankingContext): ByteArray = with(rankingContext) {
     val image = BufferedImage(/* width = */ 3438, /* height = */ 1146, /* imageType = */ BufferedImage.TYPE_INT_ARGB)
     val graphics = image.createGraphics()
 
@@ -87,8 +86,7 @@ suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingMod
     var metrics = graphics.fontMetrics
 
     // draw the exp text centered within the progress bar bounds
-    val formatLocale = Locale.forLanguageTag(locale) ?: Locale.ENGLISH
-    val progressBarText = "${"%,d".format(formatLocale, experience)} / ${"%,d".format(formatLocale, goal)} xp"
+    val progressBarText = "${"%,d".format(locale, experience)} / ${"%,d".format(locale, goal)} xp"
     val barTextX = progressBarBounds.x + (progressBarBounds.width - metrics.stringWidth(progressBarText)) / 2
     graphics.drawString(/* str = */ progressBarText, /* x = */ barTextX, /* y = */ 336)
 
@@ -114,7 +112,7 @@ suspend fun drawRankingImage(rankingModel: Ranking): ByteArray = with(rankingMod
 
     // draw the username centered vertically and left aligned
     val usernameY = usernameBounds.y + ((usernameBounds.height - metrics.height) / 2) + metrics.ascent
-    graphics.drawString(username, usernameBounds.x, usernameY)
+    graphics.drawString(name, usernameBounds.x, usernameY)
 
     // encode the image as a stream
     val outputStream = ByteArrayOutputStream()
