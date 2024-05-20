@@ -102,8 +102,8 @@ suspend fun drawRankingImage(rankingContext: RankingContext): ByteArray = with(r
 
     // calculate the maximum font size for the username to fill the given bounds
     val largestFont = graphics.font.deriveFont(/* size = */ 256f)
-    val usernameWidth = graphics.getFontMetrics(largestFont).stringWidth(username)
-    val usernameBounds = Rectangle(181, 690, 1978, 375)
+    val usernameWidth = graphics.getFontMetrics(largestFont).stringWidth(name)
+    val usernameBounds = Rectangle(/* x = */ 181, /* y = */ 690, /* width = */ 1978, /* height = */ 375)
     val adjustedSize = (usernameBounds.width / usernameWidth.toFloat()) * 256f
 
     // resize the font and metrics for the next line of text
@@ -113,9 +113,17 @@ suspend fun drawRankingImage(rankingContext: RankingContext): ByteArray = with(r
     // draw the username centered vertically and left aligned
     val usernameY = usernameBounds.y + ((usernameBounds.height - metrics.height) / 2) + metrics.ascent
     graphics.drawString(name, usernameBounds.x, usernameY)
+    graphics.dispose()
+
+    // scale the image down by half to reduce the file size
+    val scaledImage = BufferedImage(/* width = */ image.width / 2, /* height = */ image.height / 2, BufferedImage.TYPE_INT_ARGB)
+    val scaledGraphics = scaledImage.createGraphics()
+    scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+    scaledGraphics.drawImage(image, 0, 0, scaledImage.width, scaledImage.height, null)
+    scaledGraphics.dispose()
 
     // encode the image as a stream
     val outputStream = ByteArrayOutputStream()
-    ImageIO.write(image, "png", outputStream)
+    ImageIO.write(scaledImage, "png", outputStream)
     return outputStream.toByteArray()
 }
