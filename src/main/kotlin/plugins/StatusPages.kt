@@ -33,7 +33,7 @@ fun Application.configureStatusPages() {
         }
         exception<Throwable> { call, cause ->
             val status = HttpStatusCode.InternalServerError
-            this@configureStatusPages.log.error("Uncaught exception thrown while processing a request", cause)
+            LOGGER.error("An uncaught exception was thrown while processing a request", cause)
             call.respondJson(status, success = false, "message" to status.description)
         }
     }

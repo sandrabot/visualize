@@ -20,13 +20,18 @@ import BuildInfo
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import kotlin.time.Duration.Companion.milliseconds
 
+val LOGGER: Logger = LoggerFactory.getLogger("Visualize")
+
 fun Application.configureLogging() {
-    log.info("Configuring Visualize ${BuildInfo.DETAILED_VERSION}")
+    LOGGER.info("Configuring Visualize ${BuildInfo.DETAILED_VERSION}")
     install(CallLogging) {
         level = Level.INFO
+        logger = LOGGER
         format { call ->
             val method = call.request.httpMethod.value
             val uri = call.request.uri
