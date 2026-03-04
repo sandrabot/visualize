@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package routes
+package constants
 
-import io.ktor.server.routing.*
-import io.ktor.util.date.*
-import utils.respondJson
+import BuildInfo
 
-private val START_TIME = getTimeMillis()
-
-fun Route.statusRoute() {
-    get("/status") {
-        val uptime = (getTimeMillis() - START_TIME) / 1000
-        call.respondJson(data = arrayOf("uptime" to uptime))
-    }
+object Constants {
+    val DETAILED_VERSION = BuildInfo.VERSION + "_" + BuildInfo.COMMIT.take(8)
 }

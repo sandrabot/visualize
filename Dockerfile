@@ -1,20 +1,14 @@
-FROM amazonlinux AS corretto
-RUN rpm --import https://yum.corretto.aws/corretto.key && \
-    curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo && \
-    dnf install -y java-21-amazon-corretto-devel findutils fontconfig && \
-    dnf clean all
-ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
+FROM ubuntu:rolling AS openjdk
+RUN apt update && apt install -y curl openjdk-25-jdk-headless && rm -rf /var/lib/apt/lists/*
 
-FROM corretto AS build
-RUN dnf install -y git
-COPY . /home/gradle/project
-WORKDIR /home/gradle/project
-RUN ./gradlew installDist --no-daemon
+FROM openjdk AS build
+WORKDIR /srv/visualize
+COPY . .
+RUN --mount=type=cache,target=/root/.gradle ./gradlew installDist --no-daemon
 
-FROM corretto AS app
+FROM openjdk AS app
 EXPOSE 41523
 WORKDIR /opt/visualize
-COPY --from=build /home/gradle/project/build/install/* .
+COPY --from=build /srv/visualize/build/install/* .
 ENTRYPOINT ["./bin/visualize"]
-HEALTHCHECK --interval=5m --timeout=3s \
-    CMD curl -sf http://localhost:41523/status || exit 1
+HEALTHCHECK --timeout=3s CMD curl -sf http://localhost:41523/status || exit 1

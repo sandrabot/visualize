@@ -1,11 +1,11 @@
 /*
- * Copyright 2024 Avery Carroll and contributors
+ * Copyright 2026 Avery Carroll and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,41 +14,34 @@
  * limitations under the License.
  */
 
-import java.io.ByteArrayOutputStream
+val logback_version: String by project
 
 plugins {
-    application
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
-    id("com.github.gmazzo.buildconfig") version "5.3.5"
-    id("io.ktor.plugin") version "2.3.11"
+    kotlin("jvm") version "2.3.10"
+    kotlin("plugin.serialization") version "2.3.10"
+    id("com.github.gmazzo.buildconfig") version "6.0.7"
+    id("io.ktor.plugin") version "3.4.0"
 }
 
 group = "com.sandrabot"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(kotlin("reflect"))
-    implementation("ch.qos.logback:logback-classic:1.5.6")
     implementation("io.ktor:ktor-client-java")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-call-logging")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-server-status-pages")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
+    implementation("ch.qos.logback:logback-classic:$logback_version")
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 application {
@@ -58,17 +51,13 @@ application {
 buildConfig {
     packageName("")
     className("BuildInfo")
-    val commit = executeCommand("git", "rev-parse", "HEAD")
-    buildConfigField("String", "COMMIT", "\"$commit\"")
-    buildConfigField("String", "VERSION", "\"$version\"")
-    buildConfigField("String", "DETAILED_VERSION", "\"${version}_${commit.take(8)}\"")
+    buildConfigField("VERSION", provider { "${project.version}" })
+    buildConfigField("COMMIT", gitCommand("rev-parse", "HEAD"))
+    buildConfigField("LOCAL_CHANGES", gitCommand("diff", "--shortstat"))
+    buildConfigField("BUILD_TIME", System.currentTimeMillis())
+    useKotlinOutput { internalVisibility = false }
 }
 
-fun executeCommand(vararg parts: String): String {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine = parts.asList()
-        standardOutput = stdout
-    }
-    return stdout.toString("utf-8").trim()
-}
+fun gitCommand(vararg parts: String) = providers.exec {
+    commandLine("git", *parts)
+}.standardOutput.asText.get().trim()

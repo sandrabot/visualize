@@ -1,0 +1,10 @@
+services:
+  visualize:
+    container_name: visualize
+    build: .
+    ports:
+      - "41523:41523"
+    develop:
+      watch:
+        - action: rebuild
+          path: .
