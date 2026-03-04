@@ -16,6 +16,7 @@
 
 package plugins
 
+import BuildInfo
 import constants.Constants
 import io.ktor.server.application.*
 import io.ktor.server.plugins.calllogging.*
@@ -29,6 +30,7 @@ val LOGGER: Logger = LoggerFactory.getLogger("Visualize")
 
 fun Application.configureLogging() {
     LOGGER.info("Configuring Visualize ${Constants.DETAILED_VERSION}")
+    BuildInfo.LOCAL_CHANGES.takeIf { it.isNotBlank() }?.let { LOGGER.info("Experimental build has $it") }
     install(CallLogging) {
         level = Level.INFO
         logger = LOGGER
