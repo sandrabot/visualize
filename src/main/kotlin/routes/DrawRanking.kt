@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("InconsistentCommentForJavaParameter")
+
 package routes
 
 import constants.Colors
