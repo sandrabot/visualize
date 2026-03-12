@@ -19,5 +19,7 @@ package constants
 import BuildInfo
 
 object Constants {
+
     val DETAILED_VERSION = BuildInfo.VERSION + "_" + BuildInfo.COMMIT.take(8)
+
 }
