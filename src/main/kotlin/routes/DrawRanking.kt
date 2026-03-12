@@ -63,10 +63,12 @@ suspend fun drawRankingImage(rankingContext: RankingContext): ByteArray = with(r
     // compute xp progress as a float percentage between 0 and 1
     val percentage = experience.toFloat() / goal.toFloat()
     // multiply the bound width and percentage to find the actual width
-    val barWidth = (progressBarBounds.width * percentage).roundToInt()
+    val progressWidth = (progressBarBounds.width * percentage).roundToInt()
+    // limit the maximum width to the actual progress bar bounds
+    val maxWidth = min(progressWidth, progressBarBounds.width)
     graphics.color = Colors.BLURPLE
     // draw the progress bar as a simple rectangle
-    graphics.fillRect(progressBarBounds.x, progressBarBounds.y, barWidth, progressBarBounds.height)
+    graphics.fillRect(progressBarBounds.x, progressBarBounds.y, maxWidth, progressBarBounds.height)
 
     // download the user's avatar and draw it next
     val response = HTTP_CLIENT.get("$avatarUrl?size=2048")
