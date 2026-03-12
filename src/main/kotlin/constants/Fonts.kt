@@ -21,10 +21,10 @@ import java.awt.Font
 
 object Fonts {
 
-    val ALBA = loadFont("alba")
+    val ALBA = loadFont("alba.ttf")
 
-}
+    private fun loadFont(name: String): Font = useResourceStream("fonts/$name") {
+        Font.createFont(Font.TRUETYPE_FONT, this)
+    }
 
-private fun loadFont(name: String): Font = useResourceStream("fonts/$name.ttf") {
-    Font.createFont(Font.TRUETYPE_FONT, this)
 }

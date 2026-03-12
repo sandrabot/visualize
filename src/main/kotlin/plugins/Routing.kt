@@ -23,18 +23,12 @@ import routes.statusRoute
 
 fun Application.configureRouting() {
     routing {
-        route("/api/v1") {
+        // http://localhost:41523/status
+        statusRoute()
 
-            // http://localhost:41523/api/v1/status
-            statusRoute()
-
-            route("/draw") {
-
-                // http://localhost:41523/api/v1/draw/ranking
-                drawRankingRoute()
-
-            }
-
+        route("/draw") {
+            // http://localhost:41523/draw/ranking
+            drawRankingRoute()
         }
     }
 }

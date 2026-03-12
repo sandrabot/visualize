@@ -19,8 +19,8 @@ val logback_version: String by project
 plugins {
     kotlin("jvm") version "2.3.10"
     kotlin("plugin.serialization") version "2.3.10"
-    id("com.github.gmazzo.buildconfig") version "6.0.7"
-    id("io.ktor.plugin") version "3.4.0"
+    id("com.github.gmazzo.buildconfig") version "6.0.9"
+    id("io.ktor.plugin") version "3.4.1"
 }
 
 group = "com.sandrabot"
